@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Button } from 'reactstrap'
+import { uuid } from 'uuidv4';
+import {
+  Button,
+  ListGroup,
+  ListGroupItem
+} from 'reactstrap'
 import { tasks } from './data_tasks'
 
 const TaskList = () => {
@@ -11,28 +16,33 @@ const TaskList = () => {
     updateList(list.filter(item => item.taskDescription !== task));
   };
 
-  const handleMoveItem = (e) => {
+  const handleMoveItem = (id,e) => {
+    const removeItem = list.filter((item) => item.id !== id);
     const task = e.target.getAttribute("task")
-     updateList(list.filter(item => item.taskDescription !== task));
+    const newList = removeItem.concat({
+      taskDescription: task,
+      id: uuid(),
+    });
+    updateList(newList)
    };
 
   return (
     <div>
-        <ul>
-      {list.map(item => {
-        return (
-          <li>
-            <Button task={item.taskDescription} onClick={handleRemoveItem}>
-              x
-            </Button>
-            <span>{item.taskDescription}</span>
-            <Button task={item.taskDescription} onClick={handleMoveItem}>
-              Move Task
-            </Button>
-          </li>
-        );
-      })}
-      </ul>
+      <ListGroup className="text-left">
+        {list.map(item => {
+          return (
+            <ListGroupItem key={item.id} className="bg-transparent justify-content-between d-inline-flex">
+              {item.taskDescription}
+              <div className="text-right">
+                <Button className="mx-3 pointer" color="success" task={item.taskDescription} onClick={handleRemoveItem}>Done</Button>
+                <Button color="info" task={item.taskDescription} onClick={(e) => handleMoveItem(item.id, e)}>
+                  Move Task
+                </Button>
+              </div>
+            </ListGroupItem>
+          );
+        })}
+      </ListGroup>
     </div>
   );
 };
